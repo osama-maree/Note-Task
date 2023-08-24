@@ -1,4 +1,5 @@
 import { noteModel } from "../../DB/model/noteModel.js";
+import { pagination } from "../services/pagination.js";
 
 export const RetrieveNotes = async (req, res, next) => {
   try {
@@ -52,6 +53,18 @@ export const UpdateNote = async (req, res, next) => {
     } else {
       return next(new Error("Error in Added", { cause: 400 }));
     }
+  } catch (err) {
+    next(new Error(err.message, { cause: 500 }));
+  }
+};
+
+// bonus  get notes using query with pagination
+export const RetrieveNotesWithPagination = async (req, res, next) => {
+  try {
+    const { page, size } = req.query;
+    const { limit, skip } = pagination(page, size);
+    const posts = await noteModel.find({}).limit(limit).skip(skip);
+    res.status(200).json(posts);
   } catch (err) {
     next(new Error(err.message, { cause: 500 }));
   }
