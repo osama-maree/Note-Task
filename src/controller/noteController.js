@@ -69,3 +69,19 @@ export const RetrieveNotesWithPagination = async (req, res, next) => {
     next(new Error(err.message, { cause: 500 }));
   }
 };
+
+//bonus Search base query
+export const SearchBaseQuery = async (req, res, next) => {
+  try {
+    const { content, title } = req.query;
+    const SearchRes = await noteModel.find({
+      $or: [
+        { title: { $regex: title, $options: "i" } },
+        { content: { $regex: content, $options: "i" } },
+      ],
+    });
+    res.status(200).json(SearchRes);
+  } catch (err) {
+    next(new Error(err.message, { cause: 500 }));
+  }
+};
